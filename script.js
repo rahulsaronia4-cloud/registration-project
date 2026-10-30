@@ -9,13 +9,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const name = document.getElementById('devName').value.trim();
     const email = document.getElementById('devEmail').value.trim();
     const role = document.getElementById('cloudRole').value;
-
-    if (!name || !email || !role) {
+    const password = document.getElementById('devPassword').value;
+    if (!name || !email || !role || !password) {
       alertBox.className = 'alert alert-danger py-2 px-3 small';
-      alertBox.textContent = 'Error: Sabhi fields fill karein!';
+      alertBox.textContent = 'Error: fill all details!';
       alertBox.classList.remove('d-none');
       return;
     }
+
+    // LocalStorage se check aur save karna
+    let users = JSON.parse(localStorage.getItem('cloud_users')) || [];
+    const existingUser = users.find(u => u.email === email);
+
+    if (existingUser) {
+      if (existingUser.password !== password) {
+        alertBox.className = 'alert alert-danger py-2 px-3 small';
+        alertBox.textContent = 'Error: wrong password! Enter correct password.';
+        alertBox.classList.remove('d-none');
+        return;
+      }
+    } else {
+      users.push({ name, email, role, password });
+      localStorage.setItem('cloud_users', JSON.stringify(users));
+    }
+
+    alertBox.classList.add('d-none');
+    
 
     // Success Screen Render
     card.innerHTML = `
